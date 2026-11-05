@@ -9,7 +9,6 @@ import jakarta.websocket.OnMessage
 import jakarta.websocket.Session
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
@@ -54,8 +53,8 @@ class ElizaServerTest {
         // 2. REPLACE BY assertXXX expression that checks an interval; assertEquals must not be used;
         assertTrue(size in 4..5)
         // 3. EXPLAIN WHY assertEquals CANNOT BE USED AND WHY WE SHOULD CHECK THE INTERVAL
-        // El resultado final puede cambiar durante la ejecución del test. El latch libera el hilo, pero duante ese proceso, 
-        // el servidor puede (o no) enviar el 5º mensaje y luego la lista podra cambiar, 
+        // El resultado final puede cambiar durante la ejecución del test. El latch libera el hilo, pero duante ese proceso,
+        // el servidor puede (o no) enviar el 5º mensaje y luego la lista podra cambiar,
         // entonces cuando se comprueba el tamaño, puede ser o 4 o 5 dependiendo de como el scheduler ejecuta o no un hilo
         // 4. COMPLETE assertEquals(XXX, list[XXX])
         assertEquals("We were discussing you, not me.", list[3])
@@ -91,7 +90,7 @@ class ComplexClient(
         // 5. COMPLETE if (expression) {
         // 6. COMPLETE   sentence
         // }
-        if (message == "---"){
+        if (message == "What's on your mind?") {
             session.basicRemote.sendText("your mother")
         }
     }
