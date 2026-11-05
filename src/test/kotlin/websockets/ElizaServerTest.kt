@@ -8,6 +8,7 @@ import jakarta.websocket.ContainerProvider
 import jakarta.websocket.OnMessage
 import jakarta.websocket.Session
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
@@ -36,7 +37,6 @@ class ElizaServerTest {
         assertEquals("The doctor is in.", list[0])
     }
 
-    @Disabled // Remove this line when you implement onChat
     @Test
     fun onChat() {
         logger.info { "Test thread" }
@@ -48,9 +48,17 @@ class ElizaServerTest {
         latch.await()
         val size = list.size
         // 1. EXPLAIN WHY size = list.size IS NECESSARY
+        // El hilo que se encarga de recibir y enviar mensajes, este se puede modificarse mientras que los mensajes estan en el aire.
+        // Esto puede dar problemas en donde el tamaño de la lista puede cambiar mientras se este ejecutando el test.
+        // Hay que al menos guardar su tamaño en un momento para por lo menos tener un valor determinista que no cambia
         // 2. REPLACE BY assertXXX expression that checks an interval; assertEquals must not be used;
+        assertTrue(size in 4..5)
         // 3. EXPLAIN WHY assertEquals CANNOT BE USED AND WHY WE SHOULD CHECK THE INTERVAL
+        // El resultado final puede cambiar durante la ejecución del test. El latch libera el hilo, pero duante ese proceso, el servidor puede (o no)
+        // enviar el 5º mensaje y luego la lista podra cambiar, entonces cuando se comprueba el tamaño, puede ser o 4 o 5 dependiendo de como
+        // el scheduler ejecuta o no un hilo
         // 4. COMPLETE assertEquals(XXX, list[XXX])
+        assertEquals("We were discussing you, not me.", list[3])
     }
 }
 
@@ -73,7 +81,6 @@ class ComplexClient(
     private val latch: CountDownLatch,
 ) {
     @OnMessage
-    @Suppress("UNUSED_PARAMETER") // Remove this line when you implement onMessage
     fun onMessage(
         message: String,
         session: Session,
@@ -84,6 +91,9 @@ class ComplexClient(
         // 5. COMPLETE if (expression) {
         // 6. COMPLETE   sentence
         // }
+        if (message == "---"){
+            session.basicRemote.sendText("your mother")
+        }
     }
 }
 
